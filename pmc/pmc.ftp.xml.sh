@@ -6,7 +6,7 @@
 # file list: http://www.ncbi.nlm.nih.gov/pmc/about/ftp.html#XML_for_Data_Mining
 
 # path for temporary files
-tempdir=tmp
+temppath=tmp
 # main directory for output
 outputdir=output
 # output path with current date
@@ -31,13 +31,13 @@ for I in A-B C-H I-N O-Z;
 do
  curfile=articles.$I.tar.gz
  cururl=ftp://$ftp/$ftppath/$curfile
- echo "Downloading $cururl to $outputpath"
-# wget -P $outputpath $cururl
- aria2c -d $outputpath $cururl
- echo "Opening $outputpath/$curfile for output to $outputfilepath"
- tar -tvf $outputpath/$curfile >> $outputfilepath 2>> $outputerrorpath
+ echo "Downloading $cururl to $temppath"
+# wget -P $outputpath $temppath
+ aria2c -d $outputpath $temppath
+ echo "Opening $temppath/$curfile for output to $outputfilepath"
+ tar -tvf $temppath/$curfile >> $outputfilepath 2>> $outputerrorpath
 # tar -tvf $curfile >> $outputfilepath 2>> $outputerrorpath
- echo Done with $outputpath/$curfile
+ echo Done with $temppath/$curfile
 done
 # remove temporary files
 rm -r $tmp
