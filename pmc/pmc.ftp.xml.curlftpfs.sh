@@ -5,11 +5,8 @@
 # requires curlftpfs
 # file list: http://www.ncbi.nlm.nih.gov/pmc/about/ftp.html#XML_for_Data_Mining
 
-# path for temporary files
-tempdir=tmp
-# main directory for output
-outputdir=output
 # output path with current date
+outputdir=output
 outputpath=$outputdir/$(date +%s)
 # ftp server and remote path
 ftp=ftp.ncbi.nlm.nih.gov
@@ -18,6 +15,11 @@ ftppath=pub/pmc
 filename=pmc.ftp.articles.xml.list
 outputfile=$filename.tsv
 outputerror=$filename.error.txt
+# create mount point
+mkdir -p $ftp
+# mount ftp with curlftpfs
+echo Mounting $ftp
+curlftpfs $ftp $ftp
 # create output path
 mkdir -p $outputpath
 # make symlink for current version (remove old symlink first)
@@ -29,15 +31,12 @@ outputerrorpath=$outputdir/current/$outputerror
 # output file list
 for I in A-B C-H I-N O-Z;
 do
- curfile=articles.$I.tar.gz
- cururl=ftp://$ftp/$ftppath/$curfile
- echo "Downloading $cururl to $outputpath"
-# wget -P $outputpath $cururl
- aria2c -d $outputpath $cururl
- echo "Opening $outputpath/$curfile for output to $outputfilepath"
- tar -tvf $outputpath/$curfile >> $outputfilepath 2>> $outputerrorpath
+ curfile=$ftp/$ftppath/articles.$I.tar.gz
+ echo "Opening $curfile for output to $outputfilepath"
+ tar -tvf $curfile  2>> $outputerrorpath | tee $outputfilepath
 # tar -tvf $curfile >> $outputfilepath 2>> $outputerrorpath
- echo Done with $outputpath/$curfile
+ echo Done with $curfile
 done
-# remove temporary files
-rm -r $tmp
+# unmount and remove directory 
+fusermount -uz $ftp
+rmdir $ftp
