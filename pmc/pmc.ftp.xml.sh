@@ -7,6 +7,7 @@
 
 # path for temporary files
 temppath=tmp
+mkdir -p $temppath
 # main directory for output
 outputdir=output
 # output path with current date
