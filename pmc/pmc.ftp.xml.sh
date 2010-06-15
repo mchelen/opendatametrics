@@ -7,7 +7,7 @@
 
 # path for temporary files
 temppath=tmp
-mkdir -p $temppath
+mkdir -p
 # main directory for output
 outputdir=output
 # output path with current date
@@ -33,8 +33,8 @@ do
  curfile=articles.$I.tar.gz
  cururl=ftp://$ftp/$ftppath/$curfile
  echo "Downloading $cururl to $temppath"
-# wget -P $outputpath $temppath
- aria2c -d $outputpath $temppath
+# wget -P $temppath $cururl
+ aria2c -d $temppath $cururl
  echo "Opening $temppath/$curfile for output to $outputfilepath"
  tar -tvf $temppath/$curfile >> $outputfilepath 2>> $outputerrorpath
 # tar -tvf $curfile >> $outputfilepath 2>> $outputerrorpath
