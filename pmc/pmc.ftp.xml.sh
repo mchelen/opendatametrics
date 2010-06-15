@@ -1,30 +1,36 @@
 #!/bin/sh
-# requires 10-20+ gb disk space
-
-# Download NXML archives
+# requires curlftpfs
 
 # file list: http://www.ncbi.nlm.nih.gov/pmc/about/ftp.html#XML_for_Data_Mining
 
-tmppath=tmp
+# mount path
+mountpath=mount
+# output path
 outputpath=output
+# generate output file name
+outputfile=${ftp}.$(echo $ftppath|sed 's/\//./g').$(date +%s).tsv
 
-mkdir -p $tmppath
+# ftp server and remote path
+ftp=ftp.ncbi.nlm.nih.gov
+ftppath=pub/pmc
 
-cd $tmppath
+# create mount point
+mkdir -p $mountpath
 
+# mount ftp with curlftpfs
+curlftpfs $ftp $mountpath
 
-# download xml archives
-wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.A-B.tar.gz
-wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.C-H.tar.gz
-wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.I-N.tar.gz
-wget ftp://ftp.ncbi.nlm.nih.gov/pub/pmc/articles.O-Z.tar.gz
+# create output path
+mkdir -p $outputpath
 
+# output file list
+tar -tvf $mountpath/$ftppath/articles.A-B.tar.gz >> $outputpath/$outputfile 2>> errors.txt
+tar -tvf $mountpath/$ftppath/articles.C-H.tar.gz >> $outputpath/$outputfile 2>> errors.txt
+tar -tvf $mountpath/$ftppath/articles.I-N.tar.gz >> $outputpath/$outputfile 2>> errors.txt
+tar -tvf $mountpath/$ftppath/articles.O-Z.tar.gz >> $outputpath/$outputfile 2>> errors.txt
 
+# unmount
+fusermount -uz $mountpath
 
-# Extract them
-
-
-
-# remove temporary files
-cd ..
-rm -r $tmppath
+# remove mount path
+rmdir $mountpath
