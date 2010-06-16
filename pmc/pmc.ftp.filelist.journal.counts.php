@@ -31,7 +31,19 @@ $journals = array();
 while (($data = fgetcsv($handle, 0, chr(9))) !== FALSE) {
 // loop through the fields in the row
   preg_match('/^[^0-9]+/', $data[1],$matches);
-  echo $matches[0];
+// echo $matches[0];
+  $key = $matches[0];
+// check if journal count exists
+  if (array_key_exists($key,$journals)) {
+//  increment journal count
+    $journals($key)++;
+  }
+  else {
+//  start new journal count
+    $journals($key)=1;
+  }
+// show current count
+  echo "$key total = ".$journals($key)."\n";
 }
 // close file
 fclose($handle);
