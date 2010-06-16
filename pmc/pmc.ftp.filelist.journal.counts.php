@@ -36,11 +36,11 @@ while (($data = fgetcsv($handle, 0, chr(9))) !== FALSE) {
 // check if journal count exists
   if (array_key_exists($key,$journals)) {
 //  increment journal count
-    $journals($key)=$journals($key)+1;
+    $journals[$key]=$journals($key)+1;
   }
   else {
 //  start new journal count
-    $journals($key)=1;
+    $journals[$key]=1;
   }
 // show current count
   echo "$key total = ".$journals($key)."\n";
