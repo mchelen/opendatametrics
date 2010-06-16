@@ -43,7 +43,7 @@ while (($data = fgetcsv($handle, 0, chr(9))) !== FALSE) {
     $journals[$key]=1;
   }
 // show current count
-  echo "$key total = ".$journals($key)."\n";
+  echo "$key total = ".$journals[$key]."\n";
 }
 // close file
 fclose($handle);
