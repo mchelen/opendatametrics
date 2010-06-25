@@ -1,57 +1,31 @@
 <?php
 /*
- * Downloads compressed XML archives from PMC FTP
- * Extracts archives
- * Stores archive structure in text file
- * Save PMC IDs and paths into XML
+ * Display requested PMC file
  */
-  // list of xml files
-  $sourcefile = "output/pmc.ftp.articles.xml.list.tsv";
-  $outputfile = "output/pmc.ftp.articles.xml.list.xml";
+  
+// root directory where .nxml files are stored
+$filepath = "files";
 
-  $myarray = array();
-
-  // read file
-  print "loading $sourcefile\n";
-  $lines = file($sourcefile);
-  foreach ($lines as $line) {
-    // match PMC id
-    preg_match('/[0-9]+\.nxml$/', $line,$matches);
-    // pull out pmc id from regex match
-    $pmcid = substr($matches[0],0,strlen($matches[0])-5);
-    // match file path
-    preg_match('/[^\.]+\.nxml$/', $line,$matches);
-    $filepath = $matches[0];
-    // add to array
-    $myarray[$pmcid] = $filepath;
+// check if pmc id has been specified
+if(isset($_GET['pmcid'])) {
+  // get user input
+  preg_match('/[0-9]+/', $_GET["pmcid"],$matches);
+  $pmc = $matches[0];
+  // generate list files command
+  $cmd = "ls $filepath/*/*-$pmc.nxml";
+  // run command and save results (trim whitespace)
+  $output = trim(shell_exec($cmd));
+  if (strlen($output)>0) {
+    // set http header type
+    header ("Content-Type:text/xml");
+    // output requested file
+    readfile($output);
   }
-
-// build xml
-
-
-$xmlstr = <<<XML
-<?xml version='1.0'?>
-<root>
-<node>test</node>
-</root>
-XML;
-
-// new xml
-print "Building xml \n";
-$sxe = new SimpleXMLElement($xmlstr);
-
-foreach ($myarray as $key => $value) {
-  // add pmc child with the path as value
-//  print "Path: $value\n";
-  $pmc = $sxe->addChild('pmc',$value);
-  // add attribute with the pmc id as id
-//  print "PMC ID: $key\n";
-  $pmc->addAttribute('id',$key);
+  else {
+    print "PMC ID not found: \"$pmc\" \n";
+  }
 }
-
-print "Saving xml to file $outputfile \n";
-
-$sxe->asXML($outputfile);
-
-
+else {
+  readfile("form.html");
+}
 ?>

@@ -9,20 +9,16 @@ tempdir=tmp
 mkdir -p $tempdir
 # main directory for output
 outputdir=output
+# directory for article files
+filedir=files
+mkdir -p $filedir
 # remove old output files
 rm -r $outputdir 2> /dev/null
 mkdir -p $outputdir
 # ftp server and remote path
 ftp=ftp.ncbi.nlm.nih.gov
 ftppath=pub/pmc
-# generate output file name
-filename=pmc.ftp.articles.xml.list
-outputfile=$filename.tsv
-outputerror=$filename.error.txt
-# full paths for file and error output
-outputfilepath=$outputdir/$outputfile
-outputerrorpath=$outputdir/$outputerror
-# download files, extract, and output paths
+# download files and extract
 for I in A-B C-H I-N O-Z;
 do
  curfile=articles.$I.tar.gz
@@ -32,11 +28,9 @@ do
 # wget -P $temppath $cururl
 # use up to 5 concurrent connections
  aria2c -d $tempdir -s 5 $cururl
- echo "Opening $tempdir/$curfile for output to $outputfilepath\n"
- tar -tvf $tempdir/$curfile >> $outputfilepath 2>> $outputerrorpath
- echo "Exctracting $tempdir/$curfile to $outputdir"
- tar -C $outputdir -xvzf $tempdir/$curfile
- echo Done with $tempdir/$curfile
+ echo "Exctracting $tempdir/$curfile to $filedir"
+ tar -C $filedir --totals -xzf $tempdir/$curfile
+ echo Done extracting $tempdir/$curfile
 done
 # remove temporary files
 rm -r $tempdir
